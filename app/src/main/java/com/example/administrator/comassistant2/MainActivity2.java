@@ -58,7 +58,7 @@ public class MainActivity2 extends AppCompatActivity {
             public void onClick(View view) {
                 jjhandler.removeMessages(1);
                 if (isRunning) {
-                    btn_start.setText("点击运行");
+                    btn_start.setText("s点击运行");
                     isRunning = false;
                 } else {
                     btn_start.setText("点击停止");
