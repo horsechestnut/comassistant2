@@ -1313,7 +1313,7 @@ public class ComAssistantActivity extends Activity implements View.OnClickListen
         float lowValue = Float.valueOf(isStrNotEmpty(lowInput.getText().toString()) ? lowInput.getText().toString() : "0.0");
 
         if (lowValue > highValue) {
-            setMsg("上限值要不小于下限值是");
+            setMsg("上限值要不小于下限值1");
             return;
         }
         LogUtil.ii("highValue " + highValue + " lowValue " + lowValue);
