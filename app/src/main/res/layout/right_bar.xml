@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+
+Right bar button array
+
+-->
+
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/background_dark"
+    android:orientation="horizontal"
+    android:paddingRight="4dp"
+    android:weightSum="2">
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:weightSum="@dimen/rightNums">
+
+        <ToggleButton
+            android:id="@+id/tbtn_stop"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="ToggleButton"
+            android:textOff="Stop"
+            android:textOn="Stop"
+            android:textSize="@dimen/button_text_size" />
+
+        <Button
+            android:id="@+id/tbtn_baseline"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="BaseLine"
+            android:textSize="@dimen/button_text_size" />
+
+        <Button
+            android:id="@+id/btn_mvup"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="BL MvUp"
+            android:textSize="@dimen/button_text_size" />
+
+        <Button
+            android:id="@+id/btn_down"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="BL MvDw"
+            android:textSize="@dimen/button_text_size" />
+
+
+        <Button
+            android:id="@+id/btn_add"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="Mark Add"
+            android:textSize="@dimen/button_text_size" />
+
+        <Button
+            android:id="@+id/btn_remove"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="Mark Rmv"
+            android:textSize="@dimen/button_text_size" />
+
+        <Button
+            android:id="@+id/btn_save"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="Save"
+            android:textSize="@dimen/button_text_size" />
+
+        <Button
+            android:id="@+id/btn_gxtset"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="SET"
+            android:textSize="@dimen/button_text_size" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:weightSum="@dimen/rightNums">
+
+        <Button
+            android:id="@+id/btn_time_zoom"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:drawableRight="@drawable/zoom_in_w"
+            android:text="@string/td_plus"
+            android:textSize="@dimen/button_text_size" />
+
+        <Button
+            android:id="@+id/btn_time_unzoom"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:drawableRight="@drawable/zoom_out_w"
+            android:text="@string/td_plus"
+            android:textSize="@dimen/button_text_size" />
+
+        <Button
+            android:id="@+id/btn_volt_zoom"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:drawableRight="@drawable/zoom_in_w"
+            android:text="Volt"
+            android:textSize="@dimen/button_text_size" />
+
+        <Button
+            android:id="@+id/btn_volt_unzoom"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:drawableRight="@drawable/zoom_out_w"
+            android:text="Volt"
+            android:textSize="@dimen/button_text_size" />
+
+        <Button
+            android:id="@+id/btn_mvleft"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="PrePage"
+            android:textSize="@dimen/button_text_size" />
+
+        <Button
+            android:id="@+id/btn_mvright"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="NextPage"
+            android:textSize="@dimen/button_text_size" />
+
+        <Button
+            android:id="@+id/btn_rstwar"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="ResetWar"
+            android:textSize="@dimen/button_text_size" />
+
+        <Button
+            android:id="@+id/btn_mooni"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="1K/s"
+            android:textSize="@dimen/button_text_size" />
+    </LinearLayout>
+</LinearLayout>
