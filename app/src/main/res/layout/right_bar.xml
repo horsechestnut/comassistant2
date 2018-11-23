@@ -46,6 +46,7 @@ Right bar button array
             android:layout_height="0dp"
             android:layout_weight="1"
             android:text="BL MvUp"
+            android:visibility="gone"
             android:textSize="@dimen/button_text_size" />
 
         <Button
@@ -53,6 +54,7 @@ Right bar button array
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
+            android:visibility="gone"
             android:text="BL MvDw"
             android:textSize="@dimen/button_text_size" />
 
@@ -79,6 +81,15 @@ Right bar button array
             android:layout_height="0dp"
             android:layout_weight="1"
             android:text="Save"
+            android:textSize="@dimen/button_text_size" />
+
+
+        <Button
+            android:id="@+id/btn_rstwar"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="ResetWar"
             android:textSize="@dimen/button_text_size" />
 
         <Button
@@ -151,13 +162,6 @@ Right bar button array
             android:text="NextPage"
             android:textSize="@dimen/button_text_size" />
 
-        <Button
-            android:id="@+id/btn_rstwar"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:text="ResetWar"
-            android:textSize="@dimen/button_text_size" />
 
         <Button
             android:id="@+id/btn_mooni"

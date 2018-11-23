@@ -4,6 +4,7 @@ import android.os.Message;
 
 import com.example.administrator.comassistant2.simulation.ComAssistantActivity;
 import com.example.administrator.comassistant2.simulation.Config;
+import com.example.administrator.comassistant2.simulation.bean.LimitLineBean;
 import com.example.administrator.comassistant2.simulation.bean.PageChartDataBean;
 import com.example.administrator.comassistant2.simulation.bean.PageFileQueueBean;
 import com.example.administrator.comassistant2.simulation.tool.FileUtil;
@@ -87,30 +88,39 @@ public class PageFileQueueThread extends Thread implements IConstant {
             return;
         }
 
-//        List<Float> datalist = new ArrayList<>();
-        int num = 0;
-        for (int i = start_pos; i < end_pos; i++) {
-            if (i < hisFlieList.size()) {
-//                datalist.add(hisFlieList.get(i));
-                if (hisFlieList.get(i) >= 3) {
-                    num++;
+
+        LimitLineBean item = LocalSeter.getLimitLine();
+        float value = 0.0f;
+        if (item == null || (item.getLowValue() == null && item.getHighValue() == null)) {
+            value = 0.0f;
+        } else {
+            //获取策略值计算
+            float highvalue = (item.getHighValue() != null && item.getHighValue() >= 0) ? item.getHighValue() : 0.0f;
+            float lowvalue = (item.getLowValue() != null && item.getLowValue() >= 0) ? item.getLowValue() : 0.0f;
+
+            int num = 0;
+            for (int i = start_pos; i < end_pos; i++) {
+                if (i < hisFlieList.size()) {
+                    if (hisFlieList.get(i) >= lowvalue && hisFlieList.get(i) <=highvalue ) {
+                        num++;
+                    }
                 }
             }
+            //离差标准归一化
+            value = get3Float(Float.valueOf(num) / Float.valueOf(jjConfig.getPage_threshold_num()));
         }
 
         //离差标准归一化
-        float cc = get3Float(Float.valueOf(num) / Float.valueOf(jjConfig.getPage_threshold_num()));
-
         PageChartDataBean pageChartDataBean = new PageChartDataBean();
         pageChartDataBean.setFileIndex(in_bean.fileNum);
         pageChartDataBean.setPageIndex(in_bean.pageIndex);
-        pageChartDataBean.getChartData().add(cc);
+        pageChartDataBean.getChartData().add(value);
         pageChartDataBean.setType(Type_His);
 
         int allNum = jjConfig.getFile_MaxSize() / jjConfig.getPage_threshold_num();
         int startX = allNum * (pageChartDataBean.getFileIndex() - 1) + pageChartDataBean.getPageIndex();
 
-        LogUtil.ii("Page展示: His startX " + startX + " -> " + in_bean.fileNum + " -> " + in_bean.pageIndex + " -> " + cc);
+        LogUtil.ii("Page展示: His startX " + startX + " -> " + in_bean.fileNum + " -> " + in_bean.pageIndex + " -> " + value);
         Message msg = new Message();
         msg.what = Event_DrawPageChart;
         msg.obj = pageChartDataBean;
@@ -136,30 +146,39 @@ public class PageFileQueueThread extends Thread implements IConstant {
     }
 
     private void doIt4TempFile(PageFileQueueBean in_bean) {
-        //获取策略值计算
-        List<Integer> datalist = in_bean.dataList;
-        int num = 0;
-        for (int i = 0; i < datalist.size(); i++) {
-            Float cc = ComAssistantActivity.cmpRelaData(datalist.get(i));
-            if (cc >= 3) {
-                num++;
+        LimitLineBean item = LocalSeter.getLimitLine();
+        float value = 0.0f;
+        if (item == null || (item.getLowValue() == null && item.getHighValue() == null)) {
+            value = 0.0f;
+        } else {
+            //获取策略值计算
+            float highvalue = (item.getHighValue() != null && item.getHighValue() >= 0) ? item.getHighValue() : 0.0f;
+            float lowvalue = (item.getLowValue() != null && item.getLowValue() >= 0) ? item.getLowValue() : 0.0f;
+
+            List<Integer> datalist = in_bean.dataList;
+            int num = 0;
+            for (int i = 0; i < datalist.size(); i++) {
+                Float cc = ComAssistantActivity.cmpRelaData(datalist.get(i));
+                if (cc >= lowvalue && cc <= highvalue) {
+                    num++;
+                }
             }
+            //离差标准归一化
+            value = get3Float(Float.valueOf(num) / Float.valueOf(jjConfig.getPage_threshold_num()));
         }
 
-        //离差标准归一化
-        float cc = get3Float(Float.valueOf(num) / Float.valueOf(jjConfig.getPage_threshold_num()));
 
         //PageChartDataBean
         PageChartDataBean pageChartDataBean = new PageChartDataBean();
         pageChartDataBean.setFileIndex(in_bean.fileNum);
         pageChartDataBean.setPageIndex(in_bean.pageIndex);
-        pageChartDataBean.getChartData().add(cc);
+        pageChartDataBean.getChartData().add(value);
         pageChartDataBean.setType(Type_Temp);
 
         int allNum = jjConfig.getFile_MaxSize() / jjConfig.getPage_threshold_num();
         int startX = allNum * (pageChartDataBean.getFileIndex() - 1) + pageChartDataBean.getPageIndex();
 
-        LogUtil.ii("Page展示: startX " + startX + " -> " + in_bean.fileNum + " -> " + in_bean.pageIndex + " -> " + cc);
+        LogUtil.ii("Page展示: startX " + startX + " -> " + in_bean.fileNum + " -> " + in_bean.pageIndex + " -> " + value);
         Message msg = new Message();
         msg.what = Event_DrawPageChart;
         msg.obj = pageChartDataBean;

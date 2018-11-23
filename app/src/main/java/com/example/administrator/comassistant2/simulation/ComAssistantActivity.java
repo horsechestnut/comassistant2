@@ -1,8 +1,10 @@
 package com.example.administrator.comassistant2.simulation;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -15,10 +17,12 @@ import android.os.Message;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,6 +37,7 @@ import com.example.administrator.comassistant2.simulation.chart.DynamicLineChart
 import com.example.administrator.comassistant2.simulation.chart.PageLineChartManager;
 import com.example.administrator.comassistant2.simulation.collector.Collector;
 import com.example.administrator.comassistant2.simulation.filesave.FileOpster;
+import com.example.administrator.comassistant2.simulation.filesave.LocalSeter;
 import com.example.administrator.comassistant2.simulation.tool.IConstant;
 import com.example.administrator.comassistant2.simulation.tool.LogUtil;
 import com.example.administrator.comassistant2.simulation.tool.MyFunc;
@@ -279,9 +284,11 @@ public class ComAssistantActivity extends Activity implements View.OnClickListen
         } else if (timeDiv < 40) {
             dynamicLineChartManager2.OpaxBaseLineTask(timeDiv, isScopeRunning);
             if (dataFlag == false) dynamicLineChartManager2.upGrid();
+
         } else if (timeDiv < 50) {
-            dynamicLineChartManager2.OpayMarkLineTask(timeDiv, isScopeRunning);
-            if (dataFlag == false) dynamicLineChartManager2.upGrid();
+            onCreateAlertDialog();
+//            dynamicLineChartManager2.OpayMarkLineTask(timeDiv, isScopeRunning);
+//            if (dataFlag == false) dynamicLineChartManager2.upGrid();
         } else if (timeDiv < 60) {
             if (isScopeRunning) {
                 setDiaMsg("请先停止采集，再进行保存！");
@@ -289,9 +296,16 @@ public class ComAssistantActivity extends Activity implements View.OnClickListen
 //                oldSave();
                 pd = ProgressDialog.show(ComAssistantActivity.this, "提示", "数据保存中，请稍后……");
                 jjBufferManager.saveToHis(); //保存数据
+
                 dynamicLineChartManager2.index = 0;
-                dynamicLineChartManager2.rstCurve();
+                dynamicLineChartManager2.rstCurve(); //更新Chart 表
+
+                jjPageChartManager.index = -10;
+                jjPageChartManager.rstCurve(); //更新PageChart
+                jjBufferManager.initPageIndex();
+
                 addStart();
+                initPageStart();
                 handler2.sendEmptyMessage(0);//关闭对话框
             }
         }
@@ -1247,6 +1261,79 @@ public class ComAssistantActivity extends Activity implements View.OnClickListen
         } catch (Exception e) {
             LogUtil.ee(e);
         }
+    }
 
+
+    private void onCreateAlertDialog() {
+        // 使用LayoutInflater来加载dialog_setname.xml布局
+        LayoutInflater layoutInflater = LayoutInflater.from(this);
+        View nameView = layoutInflater.inflate(R.layout.alert_dialog, null);
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+                this);
+
+        // 使用setView()方法将布局显示到dialog
+        alertDialogBuilder.setView(nameView);
+
+        final EditText highInput = (EditText) nameView.findViewById(R.id.high_edit);
+        final EditText lowInput = (EditText) nameView.findViewById(R.id.lower_edit);
+//        final TextView name = (TextView) findViewById(R.id.changename_textview);
+
+
+        // 设置Dialog按钮
+        alertDialogBuilder
+                .setCancelable(false)
+                .setPositiveButton("OK",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                // 获取edittext的内容,显示到textview
+                                do4BaseLine(highInput, lowInput);
+//                                setMsg(userInput.getText().toString());
+//                                name.setText(userInput.getText());
+                            }
+                        })
+                .setNegativeButton("Cancel",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
+
+        // create alert dialog
+        AlertDialog alertDialog = alertDialogBuilder.create();
+
+        // show it
+        alertDialog.show();
+    }
+
+    //BaseLine 线
+    private void do4BaseLine(EditText highInput, EditText lowInput) {
+        //先判断数据是否
+        float highValue = Float.valueOf(isStrNotEmpty(highInput.getText().toString()) ? highInput.getText().toString() : "0.0");
+        float lowValue = Float.valueOf(isStrNotEmpty(lowInput.getText().toString()) ? lowInput.getText().toString() : "0.0");
+
+        if (lowValue > highValue) {
+            setMsg("上限值要不小于下限值");
+            return;
+        }
+        LogUtil.ii("highValue " + highValue + " lowValue " + lowValue);
+        if (highValue <= 0 && lowValue <= 0) {
+            LocalSeter.clearLimitLine();
+            dynamicLineChartManager2.removeXAllLimitLines();
+        } else {
+            LocalSeter.saveLimitLine(highValue, lowValue);
+            boolean isContainDraw = dynamicLineChartManager2.drawLimitLine();
+            if (isContainDraw) {
+                isShowBaseline = true;
+            }
+
+            if (!isScopeRunning) {
+                dynamicLineChartManager2.upGrid();
+            }
+        }
+    }
+
+    public static boolean isStrNotEmpty(String str) {
+        return str != null && !str.equals("");
     }
 }

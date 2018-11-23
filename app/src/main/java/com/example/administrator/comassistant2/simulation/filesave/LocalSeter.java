@@ -8,10 +8,11 @@ import com.example.administrator.comassistant2.simulation.tool.LogUtil;
 import com.github.mikephil.charting.components.LimitLine;
 
 public class LocalSeter {
-    public static void saveLimitLine(float in_info) {
+    public static void saveLimitLine(float high_info,float low_info) {
         LimitLineBean item = new LimitLineBean();
-        item.setValue(in_info);
-        item.setLabel(String.valueOf(in_info));
+        item.setHighValue(high_info);
+        item.setLabel(String.valueOf(high_info));
+        item.setLowValue(low_info);
         LocalInfoUtil.setLimitLine(item);
     }
 

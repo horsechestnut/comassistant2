@@ -47,6 +47,7 @@ public class DynamicLineChartManager {
     private boolean D = false;
     private int LimitLinuNum = 1;
     private LimitLine baseLine = null;
+    private LimitLine baseLowLine = null;
 
     private List<String> names = new ArrayList<>(); //折线名字集合
     private List<Integer> colour = new ArrayList<>();//折线颜色集合
@@ -236,6 +237,7 @@ public class DynamicLineChartManager {
         }
     }
 
+
     //设置横向限制线
     public void OpayMarkLine(int timeDiv) {
         float x = lineChart.getCenter().x;
@@ -256,7 +258,7 @@ public class DynamicLineChartManager {
                 baseLine.setTextSize(20f);
                 leftAxis.addLimitLine(baseLine);
                 baseLine.isEnabled();
-                LocalSeter.saveLimitLine(y);
+//                LocalSeter.saveLimitLine(y);
             } else {
                 leftAxis.removeAllLimitLines();
                 LocalSeter.clearLimitLine();
@@ -275,7 +277,7 @@ public class DynamicLineChartManager {
                 baseLine.setLineColor(Color.YELLOW);
                 baseLine.setTextSize(20f);
                 leftAxis.addLimitLine(baseLine);
-                LocalSeter.saveLimitLine((float) (yy / 1.05));
+//                LocalSeter.saveLimitLine((float) (yy / 1.05));
 
             }
         } else if (timeDiv == 41)//up
@@ -291,7 +293,7 @@ public class DynamicLineChartManager {
                 baseLine.setLineColor(Color.YELLOW);
                 baseLine.setTextSize(20f);
                 leftAxis.addLimitLine(baseLine);
-                LocalSeter.saveLimitLine((float) (yy * 1.05));
+//                LocalSeter.saveLimitLine((float) (yy * 1.05));
             }
         }
         lineChart.invalidate();
@@ -603,18 +605,33 @@ public class DynamicLineChartManager {
         LimitLineBean item = LocalSeter.getLimitLine();
         if (item != null) {
             leftAxis.removeLimitLine(baseLine);
-            baseLine = new LimitLine(item.getValue(), item.getLabel());
-            baseLine.setTextColor(Color.WHITE);
-            baseLine.setLineColor(Color.YELLOW);
-            baseLine.setTextSize(20f);
-            leftAxis.addLimitLine(baseLine);
-            LogUtil.ii("横向限制线: 存在Local数据 : " + item.getValue());
+            leftAxis.removeLimitLine(baseLowLine);
+
+            if (item.getHighValue() != null && item.getHighValue() > 0) {
+                baseLine = new LimitLine(item.getHighValue(), "H-"+item.getHighValue());
+                baseLine.setTextColor(Color.WHITE);
+                baseLine.setLineColor(Color.YELLOW);
+                baseLine.setTextSize(10f);
+                leftAxis.addLimitLine(baseLine);
+            }
+
+
+            if (item.getLowValue() != null &&item.getLowValue() > 0) {
+                baseLowLine = new LimitLine(item.getLowValue(), "L-"+item.getLowValue());
+                baseLowLine.setTextColor(Color.WHITE);
+                baseLowLine.setLineColor(Color.YELLOW);
+                baseLowLine.setTextSize(10f);
+                leftAxis.addLimitLine(baseLowLine);
+            }
+
+            LogUtil.ii("横向限制线: 存在Local数据 : " + item.getHighValue() + " " + item.getLowValue());
             return true;
         } else {
             LogUtil.ii("横向限制线: 没有Local数据");
             return false;
         }
     }
+
 
     private void autoAddXLimitLines() {
         //获取当前分页的最后一个点
@@ -667,6 +684,12 @@ public class DynamicLineChartManager {
             needDrawXLimitMap = localInfo.getLists();
             LogUtil.ii("重新初始化MARK");
         }
+    }
+
+    public void removeXAllLimitLines() {
+        leftAxis.removeAllLimitLines();
+//        leftAxis.removeLimitLine(baseLine);
+//        leftAxis.removeLimitLine(baseLowLine);
     }
 
 //------------------------------------------------------

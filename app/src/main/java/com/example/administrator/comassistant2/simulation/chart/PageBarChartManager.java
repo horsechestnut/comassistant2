@@ -278,7 +278,7 @@ public class PageBarChartManager {
                 baseLine.setTextSize(20f);
                 leftAxis.addLimitLine(baseLine);
                 baseLine.isEnabled();
-                LocalSeter.saveLimitLine(y);
+//                LocalSeter.saveLimitLine(y);
             } else {
                 leftAxis.removeAllLimitLines();
                 LocalSeter.clearLimitLine();
@@ -297,7 +297,7 @@ public class PageBarChartManager {
                 baseLine.setLineColor(Color.YELLOW);
                 baseLine.setTextSize(20f);
                 leftAxis.addLimitLine(baseLine);
-                LocalSeter.saveLimitLine((float) (yy / 1.05));
+//                LocalSeter.saveLimitLine((float) (yy / 1.05));
 
             }
         } else if (timeDiv == 41)//up
@@ -313,7 +313,7 @@ public class PageBarChartManager {
                 baseLine.setLineColor(Color.YELLOW);
                 baseLine.setTextSize(20f);
                 leftAxis.addLimitLine(baseLine);
-                LocalSeter.saveLimitLine((float) (yy * 1.05));
+//                LocalSeter.saveLimitLine((float) (yy * 1.05));
             }
         }
         lineChart.invalidate();
@@ -627,12 +627,12 @@ public class PageBarChartManager {
         LimitLineBean item = LocalSeter.getLimitLine();
         if (item != null) {
             leftAxis.removeLimitLine(baseLine);
-            baseLine = new LimitLine(item.getValue(), item.getLabel());
+//            baseLine = new LimitLine(item.getValue(), item.getLabel());
             baseLine.setTextColor(Color.WHITE);
             baseLine.setLineColor(Color.YELLOW);
             baseLine.setTextSize(20f);
             leftAxis.addLimitLine(baseLine);
-            LogUtil.ii("横向限制线: 存在Local数据 : " + item.getValue());
+//            LogUtil.ii("横向限制线: 存在Local数据 : " + item.getValue());
             return true;
         } else {
             LogUtil.ii("横向限制线: 没有Local数据");

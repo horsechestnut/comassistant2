@@ -290,6 +290,10 @@ public class TempFileQueueThread extends Thread {
             tempList.clear();
         }
 
+        if (pageList.size() > 0)
+        {
+            pageList.clear();
+        }
     }
 
 
