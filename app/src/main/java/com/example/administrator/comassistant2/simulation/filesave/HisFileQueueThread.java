@@ -3,6 +3,7 @@ package com.example.administrator.comassistant2.simulation.filesave;
 import com.example.administrator.comassistant2.simulation.Config;
 import com.example.administrator.comassistant2.simulation.bean.PageQueueIndexData;
 import com.example.administrator.comassistant2.simulation.tool.FileUtil;
+import com.example.administrator.comassistant2.simulation.tool.IConstant;
 import com.example.administrator.comassistant2.simulation.tool.LogUtil;
 
 import java.io.File;
@@ -15,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 
 import static com.example.administrator.comassistant2.simulation.tool.MyFunc.byteToInt;
 
-public class HisFileQueueThread extends Thread {
+public class HisFileQueueThread extends Thread implements IConstant {
     private int jjHisFileIndex = -1; //从0开始
     private List<Integer> curHisList = new ArrayList<>(); //历史文件的临时缓冲数据
     private int THREE = 3;
@@ -40,7 +41,21 @@ public class HisFileQueueThread extends Thread {
         return 0;
     }
 
+    public List<Integer> getPageList(int in_pageindex) {
+        List<Integer> rlt = new ArrayList<>();
+        if (in_pageindex == Earlyest_FileNum || in_pageindex == Lastest_FileNum) {
+            return rlt;
+        }
+
+        if (in_pageindex > 0) {
+            rlt = getFileData(in_pageindex);
+        }
+
+        return rlt;
+    }
+
     //依据文件数获取历史数据
+    @Deprecated
     public List<Integer> getPageList(int in_filenum, int pageindex) {
         if (jjPageIndex == null || jjPageIndex.getFileNum() != in_filenum || jjPageIndex.getDataList() == null || jjPageIndex.getDataList().size() <= 0) {
             //更新文件数据

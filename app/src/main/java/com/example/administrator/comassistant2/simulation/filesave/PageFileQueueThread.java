@@ -73,7 +73,7 @@ public class PageFileQueueThread extends Thread implements IConstant {
 
     private void doIt(PageFileQueueBean in_bean) {
         doIt4TempFile(in_bean);
-        doIt4HisFile(in_bean);
+//        doIt4HisFile(in_bean);
     }
 
     private void doIt4HisFile(PageFileQueueBean in_bean) {
@@ -175,8 +175,9 @@ public class PageFileQueueThread extends Thread implements IConstant {
         pageChartDataBean.getChartData().add(value);
         pageChartDataBean.setType(Type_Temp);
 
-        int allNum = jjConfig.getFile_MaxSize() / jjConfig.getPage_threshold_num();
-        int startX = allNum * (pageChartDataBean.getFileIndex() - 1) + pageChartDataBean.getPageIndex();
+//        int allNum = jjConfig.getFile_MaxSize() / jjConfig.getPage_MaxSize();
+//        int startX = allNum * (pageChartDataBean.getFileIndex() - 1) + pageChartDataBean.getPageIndex();
+        int startX = pageChartDataBean.getPageIndex();
 
         LogUtil.ii("Page展示: startX " + startX + " -> " + in_bean.fileNum + " -> " + in_bean.pageIndex + " -> " + value);
         Message msg = new Message();

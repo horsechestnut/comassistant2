@@ -2,7 +2,7 @@ package com.example.administrator.comassistant2.simulation.bean;
 
 import java.io.Serializable;
 
-public class LimitLineBean implements Serializable {
+public class  LimitLineBean implements Serializable {
     private static final long serialVersionUID = 1L;
     private Float highValue;
     private Float lowValue;

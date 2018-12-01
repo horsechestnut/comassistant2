@@ -3,6 +3,7 @@ package com.example.administrator.comassistant2.simulation;
 import android.widget.Toast;
 
 import com.example.administrator.comassistant2.simulation.bean.ComBean;
+import com.example.administrator.comassistant2.simulation.bean.PageFileIndexBean;
 import com.example.administrator.comassistant2.simulation.bean.PageFileQueueBean;
 import com.example.administrator.comassistant2.simulation.bean.PageQueueIndexData;
 import com.example.administrator.comassistant2.simulation.chart.ChartQueueThread;
@@ -93,26 +94,36 @@ public class BufferManager {
 
     //获取左侧分页的实时数据，每调用一次则自动左移一次，同时变更jjPageIndex数据
     public List<Integer> getLeftPageTempDataList() {
-        return jjFileOpster.jjTempQueueThread.getPrePageList();
+        return jjFileOpster.jjTempQueueThread.getPrePageList_V2();
     }
 
     public List<Integer> getAssignedPageList() {
         return jjFileOpster.jjTempQueueThread.getAssignedPageList();
     }
 
-    //设置分页数据的文件index
+    //设置分页数据的文件index,不在时使用
+    @Deprecated
     public void setPageFileIndex(int in_file, int in_page) {
         jjFileOpster.jjTempQueueThread.setPageFileIndex(in_file, in_page);
     }
 
+    public void setPageFileIndex(int in_page) {
+        jjFileOpster.jjTempQueueThread.setPageFileIndex(in_page);
+    }
+
     //获取左侧分页的历史数据，依据jjPageIndex，如果his文件存在，则认为也有
     public List<Integer> getPageHisDataList() {
-        int tempindex = getPageFileIndex();
-        int pageindex = jjFileOpster.jjTempQueueThread.jjPageIndex.getPageIndex();
-        return jjFileOpster.jjHisQueueThread.getPageList(tempindex, pageindex);
+//        int tempindex = getPageFileIndex();
+        int pageindex = jjFileOpster.jjTempQueueThread.jjPageIndex2.getPage_id();
+        return jjFileOpster.jjHisQueueThread.getPageList(pageindex);
 
     }
 
+
+    public int getPageId()
+    {
+        return  jjFileOpster.jjTempQueueThread.jjPageIndex2.getPage_id();
+    }
     //获取分页数据的文件index
     public int getPageFileIndex() {
         return jjFileOpster.jjTempQueueThread.jjPageIndex.getFileNum();
@@ -135,12 +146,12 @@ public class BufferManager {
 
     //用户切换到实时监控模式时，此时分页模式会自动回到原来位置
     public void initPageIndex() {
-        jjFileOpster.jjTempQueueThread.jjPageIndex = new PageQueueIndexData();
+        jjFileOpster.jjTempQueueThread.jjPageIndex2 = new PageFileIndexBean();
     }
 
     //获取右侧下一页分页的实时数据，每调用一次则自动右移一次，同时变更jjPageIndex数据
     public List<Integer> getRightPageTempDataList() {
-        return jjFileOpster.jjTempQueueThread.getNextPageList();
+        return jjFileOpster.jjTempQueueThread.getNextPageList_V2();
     }
 
 

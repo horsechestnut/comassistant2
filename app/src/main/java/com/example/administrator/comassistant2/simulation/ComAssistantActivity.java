@@ -29,7 +29,7 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.example.administrator.comassistant2.R;
-import com.example.administrator.comassistant2.simulation.activity.setactivity.SetActivity;
+import com.example.administrator.comassistant2.simulation.bean.LimitLineBean;
 import com.example.administrator.comassistant2.simulation.bean.PageChartDataBean;
 import com.example.administrator.comassistant2.simulation.bean.PageFileQueueBean;
 import com.example.administrator.comassistant2.simulation.broadcast.BgmReceiver;
@@ -158,8 +158,6 @@ public class ComAssistantActivity extends Activity implements View.OnClickListen
         new Thread(new FileOperatThread()).start();     //图标操作
         avgHandler.sendEmptyMessage(Event_OpenCollector);  //开始采集
         avgHandler.sendEmptyMessageDelayed(Event_TimingStatisLog, jjConfig.getTimer_Statis()); //定时打印日志
-
-
     }
 
 
@@ -271,9 +269,7 @@ public class ComAssistantActivity extends Activity implements View.OnClickListen
 
     private void BtnClickEvent() {
         if (timeDiv < 10) {
-            dynamicLineChartManager2.addAxChangTask(timeDiv, isScopeRunning);
-            if (dataFlag == false) dynamicLineChartManager2.upGrid();
-            tccf = true;
+            doBtnTime();
         } else if (timeDiv < 20) {
             dynamicLineChartManager2.addYxChangeTask(timeDiv, isScopeRunning);
             if (dataFlag == false) dynamicLineChartManager2.upGrid();
@@ -310,6 +306,17 @@ public class ComAssistantActivity extends Activity implements View.OnClickListen
             }
         }
         timeDiv = -1;
+    }
+
+    //扩大或者缩小一屏展示数量
+    private void doBtnTime() {
+        try {
+            dynamicLineChartManager2.addAxChangTask(timeDiv, isScopeRunning);
+            if (dataFlag == false) dynamicLineChartManager2.upGrid();
+            tccf = true;
+        } catch (Exception e) {
+            LogUtil.ee(e);
+        }
     }
 
     private void RefreshCurve() {
@@ -580,7 +587,8 @@ public class ComAssistantActivity extends Activity implements View.OnClickListen
         switch (id) {
             // Time scale+ button
             case R.id.btn_gxtset:
-                SetActivity.switchToThis(ComAssistantActivity.this);
+                setMsg("暂不开放");
+//                SetActivity.switchToThis(ComAssistantActivity.this);
                 break;
             case R.id.btn_mooni:
                 do4BtnMoni();
@@ -660,13 +668,16 @@ public class ComAssistantActivity extends Activity implements View.OnClickListen
             List<Float> hisChartList = jjBufferManager.genChartList(hisList);
 
             if (tempChartList == null || tempChartList.size() <= 0) {
+                if (jjBufferManager.getPageId() == Lastest_FileNum) {
+                    setMsg("已经是最后一页了");
+                }
                 return;
             }
 
             //获取当前的可视起始值
             int old_startPox = Double.valueOf(Math.ceil(dynamicLineChartManager2.lineChart.getLowestVisibleX())).intValue();
 
-            int startX = (jjBufferManager.getPageFileIndex() - 1) * jjConfig.getFile_MaxSize() + 1000;
+            int startX = (jjBufferManager.getPageId() - 1) * jjConfig.getPage_MaxSize() + 1000;
 
             LogUtil.ii("旧的可视 " + old_startPox + " index " + jjBufferManager.getPageFileIndex() + " 新的起始 " + startX);
             //清空原来的图表
@@ -679,6 +690,10 @@ public class ComAssistantActivity extends Activity implements View.OnClickListen
 
             //绘制数据
             dynamicLineChartManager2.upGrid(startX);
+
+            //分页表移动到相关位置
+            jjPageChartManager.upGrid(jjBufferManager.getPageId());
+
         } catch (Exception e) {
             LogUtil.ee(e);
         }
@@ -695,13 +710,16 @@ public class ComAssistantActivity extends Activity implements View.OnClickListen
             List<Float> hisChartList = jjBufferManager.genChartList(hisList);
 
             if (tempChartList == null || tempChartList.size() <= 0) {
+                if (jjBufferManager.getPageId() == Earlyest_FileNum) {
+                    setMsg("已经是第一页了");
+                }
                 return;
             }
 
             //获取当前的可视起始值
             int old_startPox = Double.valueOf(Math.ceil(dynamicLineChartManager2.lineChart.getLowestVisibleX())).intValue();
 
-            int startX = (jjBufferManager.getPageFileIndex() - 1) * jjConfig.getFile_MaxSize() + 1000;
+            int startX = (jjBufferManager.getPageId() - 1) * jjConfig.getPage_MaxSize() + 1000;
 
             LogUtil.ii("旧的可视 " + old_startPox + " index " + jjBufferManager.getPageFileIndex() + " 新的起始 " + startX);
             //清空原来的图表
@@ -713,7 +731,10 @@ public class ComAssistantActivity extends Activity implements View.OnClickListen
             dynamicLineChartManager2.addLineData(hisChartList, 1, startX);
 
             //绘制数据
-            dynamicLineChartManager2.upGrid(old_startPox);
+            dynamicLineChartManager2.upGrid(startX);
+
+            //分页表移动到相关位置
+            jjPageChartManager.upGrid(jjBufferManager.getPageId());
 
 
         } catch (Exception e) {
@@ -1031,9 +1052,8 @@ public class ComAssistantActivity extends Activity implements View.OnClickListen
     //绘制pageIndex数据
     private void doDrawPageChartDataBean(PageChartDataBean pageChartDataBean) {
         int line_index = pageChartDataBean.getType() == Type_Temp ? 0 : 1;
-        int allNum = jjConfig.getFile_MaxSize() / jjConfig.getPage_threshold_num();
 
-        int startX = allNum * (pageChartDataBean.getFileIndex() - 1) + pageChartDataBean.getPageIndex();
+        int startX = pageChartDataBean.getPageIndex();
         jjPageChartManager.addLineData(pageChartDataBean.getChartData(), line_index, startX, pageChartDataBean);
         int end_x = jjPageChartManager.getLastXPos();
         jjPageChartManager.upGrid(end_x);
@@ -1072,7 +1092,7 @@ public class ComAssistantActivity extends Activity implements View.OnClickListen
     private void initPageStart() {
         for (int i = 0; i < 11; i++) {
             pageList.add((float) 0);
-            pageList.add((float) 0);
+            pageList.add((float) -1);
             jjPageChartManager.addEntry(pageList, 100);
             pageList.clear();
         }
@@ -1228,7 +1248,9 @@ public class ComAssistantActivity extends Activity implements View.OnClickListen
 
     private void toPage(int in_file, int in_page) {
         try {
-            jjBufferManager.setPageFileIndex(in_file, in_page);
+            jjBufferManager.setPageFileIndex(in_page);
+
+
             //文件数据
             List<Integer> tempList = jjBufferManager.getAssignedPageList();
 //            List<Integer> hisList = new ArrayList<>();
@@ -1244,8 +1266,7 @@ public class ComAssistantActivity extends Activity implements View.OnClickListen
 
             //获取当前的可视起始值
             int old_startPox = Double.valueOf(Math.ceil(dynamicLineChartManager2.lineChart.getLowestVisibleX())).intValue();
-//            int startX = (jjBufferManager.getPageFileIndex() - 1) * jjConfig.getFile_MaxSize() + 1000;
-            int startX = jjConfig.getFile_MaxSize() * (in_file - 1) + (in_page - 1) * jjConfig.getPage_threshold_num() + 1000;
+            int startX = (in_page - 1) * jjConfig.getPage_MaxSize() + 1000;
 
             LogUtil.ii("旧的可视 " + old_startPox + " index " + jjBufferManager.getPageFileIndex() + " 新的起始 " + startX);
             //清空原来的图表
@@ -1277,8 +1298,21 @@ public class ComAssistantActivity extends Activity implements View.OnClickListen
 
         final EditText highInput = (EditText) nameView.findViewById(R.id.high_edit);
         final EditText lowInput = (EditText) nameView.findViewById(R.id.lower_edit);
-//        final TextView name = (TextView) findViewById(R.id.changename_textview);
 
+        //获取缓存信息，如果存在数据，则填充之
+        LimitLineBean item = LocalSeter.getLimitLine();
+        if (item != null) {
+            if (item.getHighValue() != null && item.getHighValue() > 0) {
+                highInput.setText(String.valueOf(item.getHighValue()));
+            } else {
+                highInput.setHint("0.0");
+            }
+            if (item.getLowValue() != null && item.getLowValue() > 0) {
+                lowInput.setText(String.valueOf(item.getLowValue()));
+            } else {
+                lowInput.setHint("0.0");
+            }
+        }
 
         // 设置Dialog按钮
         alertDialogBuilder
@@ -1286,10 +1320,7 @@ public class ComAssistantActivity extends Activity implements View.OnClickListen
                 .setPositiveButton("OK",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
-                                // 获取edittext的内容,显示到textview
                                 do4BaseLine(highInput, lowInput);
-//                                setMsg(userInput.getText().toString());
-//                                name.setText(userInput.getText());
                             }
                         })
                 .setNegativeButton("Cancel",

@@ -419,7 +419,7 @@ public class DynamicLineChartManager {
                 lineChart.moveViewToX(index - xspace[disCounter]);
 
                 //自动添加
-                autoAddXLimitLines();
+//                autoAddXLimitLines();
             } catch (Exception e) {
                 if (D) Log.d(TAG, "upGrid: Error" + e.toString());
                 if (D) Log.d(TAG, "upGrid: Error" + xspace[disCounter]);

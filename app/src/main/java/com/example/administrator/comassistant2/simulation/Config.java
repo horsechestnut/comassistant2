@@ -7,6 +7,9 @@ public class Config {
     // 配置方式有两种，按照大约一分钟的数据量，大约234K;
     //也可以是Chart一次装载的整数倍
     private int File_MaxSize = 2000 * 2;
+    //分页最大值
+    private  int Page_MaxSize = 4000;
+
 //    private int File_MaxSize = 2000*10*2;
 //    private int File_MaxSize= 1000*60*4;
 
@@ -17,7 +20,7 @@ public class Config {
     private int overview_page_filenum = 2;
 
     //添加的pagechart按照每1000个点中的超限个数显示吧，这样没有的话就显示0，使用的时候比较好定位哪里有超过设定值
-    private int page_threshold_num = 1000;
+    private int page_threshold_num = 4000;
 
 
     public int getUI_Chart_ShowLimit() {
@@ -58,5 +61,13 @@ public class Config {
 
     public void setPage_threshold_num(int page_threshold_num) {
         this.page_threshold_num = page_threshold_num;
+    }
+
+    public int getPage_MaxSize() {
+        return Page_MaxSize;
+    }
+
+    public void setPage_MaxSize(int page_MaxSize) {
+        Page_MaxSize = page_MaxSize;
     }
 }
