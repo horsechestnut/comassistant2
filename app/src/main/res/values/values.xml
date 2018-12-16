@@ -15,4 +15,9 @@
         <dimen name="time_dialog_list_width">100dp</dimen>
         <dimen name="time_dialog_list_text_size">12sp</dimen>
         <dimen name="rightNums">7</dimen>
+        <dimen name="legend_textsize">9px</dimen>
+        <dimen name="legend2_textsize">10px</dimen>
+        <dimen name="xAxis_textsize">5px</dimen>
+        <dimen name="leftAxis_textsize">10px</dimen>
+        <dimen name="baseLine_textsize">10px</dimen>
     </resources>

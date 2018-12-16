@@ -41,13 +41,23 @@ public class TempFileQueueThread extends Thread implements IConstant {
     /**
      * 引导分页
      */
-    public PageFileIndexBean jjPageIndex2 = new PageFileIndexBean();
+    public PageFileIndexBean jjPageIndex2;
 
+    /**
+     * 如果用户把程序放到后台，此时会自动暂停，但是下次重启时jjPageIndex2会重新初始化为0，这样点击启动时，PageChart会出现混乱，这个便是避免方法
+     */
+    public static int PauseResumePageId = -10;
 
     public TempFileQueueThread() {
         tempList = new ArrayList<>();
         pageList = new ArrayList<>();
         jjConfig = new Config();
+        jjPageIndex2 = new PageFileIndexBean();
+        if (PauseResumePageId != -10) {
+            jjPageIndex2.setPage_id(PauseResumePageId);
+            jjPageIndex2.genFileIndex();
+        }
+
         jjTimeStatis = new TimeStatisIt("TempFile");
         queue = new ArrayBlockingQueue(10000);
         init();
@@ -272,6 +282,7 @@ public class TempFileQueueThread extends Thread implements IConstant {
 
         do4PageChart(in_num); //Page表处理
 
+        //实时表数据处理，超过规定阀值则进行写入操作
         if (tempList.size() >= jjConfig.getFile_MaxSize()) {
             jjTimeStatis.startIt();
             doWriteIt();
@@ -281,7 +292,7 @@ public class TempFileQueueThread extends Thread implements IConstant {
 
     //处理Chart表数据
     private void do4PageChart(Integer in_num) {
-        pageList.add(in_num);
+        pageList.add(in_num); //分页表添加数据
 
         if (pageList.size() >= jjConfig.getPage_MaxSize()) {
             jjPageIndex2.setPage_id(jjPageIndex2.getPage_id() + 1);//自动加1

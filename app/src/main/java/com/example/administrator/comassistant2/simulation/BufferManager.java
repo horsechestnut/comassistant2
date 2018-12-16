@@ -5,8 +5,8 @@ import android.widget.Toast;
 import com.example.administrator.comassistant2.simulation.bean.ComBean;
 import com.example.administrator.comassistant2.simulation.bean.PageFileIndexBean;
 import com.example.administrator.comassistant2.simulation.bean.PageFileQueueBean;
-import com.example.administrator.comassistant2.simulation.bean.PageQueueIndexData;
 import com.example.administrator.comassistant2.simulation.chart.ChartQueueThread;
+import com.example.administrator.comassistant2.simulation.chart.DynamicLineChartManager;
 import com.example.administrator.comassistant2.simulation.filesave.FileOpster;
 import com.example.administrator.comassistant2.simulation.filesave.PageFileQueueThread;
 import com.example.administrator.comassistant2.simulation.tool.LogUtil;
@@ -120,10 +120,10 @@ public class BufferManager {
     }
 
 
-    public int getPageId()
-    {
-        return  jjFileOpster.jjTempQueueThread.jjPageIndex2.getPage_id();
+    public int getPageId() {
+        return jjFileOpster.jjTempQueueThread.jjPageIndex2.getPage_id();
     }
+
     //获取分页数据的文件index
     public int getPageFileIndex() {
         return jjFileOpster.jjTempQueueThread.jjPageIndex.getFileNum();
@@ -145,8 +145,22 @@ public class BufferManager {
     }
 
     //用户切换到实时监控模式时，此时分页模式会自动回到原来位置
-    public void initPageIndex() {
-        jjFileOpster.jjTempQueueThread.jjPageIndex2 = new PageFileIndexBean();
+    public void initPageIndex(int in_curPageNum) {
+        Config jjConfig = new Config();
+        if (DynamicLineChartManager.index <= jjConfig.getChart_InitAdd_Num()) {
+            jjFileOpster.jjTempQueueThread.jjPageIndex2 = new PageFileIndexBean();
+        }
+
+        int page = (DynamicLineChartManager.index - jjConfig.getChart_InitAdd_Num()) / jjConfig.getPage_MaxSize();
+        LogUtil.ii("初始化当前页 " + page + " " + in_curPageNum + " " + DynamicLineChartManager.index + " " + jjFileOpster.jjTempQueueThread.jjPageIndex2.getPage_id());
+
+        if (DynamicLineChartManager.index > jjConfig.getChart_InitAdd_Num() && in_curPageNum > jjConfig.getPage_InitAdd_Num()) {
+            jjFileOpster.jjTempQueueThread.jjPageIndex2 = new PageFileIndexBean();
+            jjFileOpster.jjTempQueueThread.jjPageIndex2.setPage_id(in_curPageNum-jjConfig.getPage_InitAdd_Num());
+            jjFileOpster.jjTempQueueThread.jjPageIndex2.genFileIndex();
+            LogUtil.ii("初始化当前页 新 " + jjFileOpster.jjTempQueueThread.jjPageIndex2.getPage_id());
+        }
+
     }
 
     //获取右侧下一页分页的实时数据，每调用一次则自动右移一次，同时变更jjPageIndex数据

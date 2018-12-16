@@ -3,11 +3,14 @@ package com.example.administrator.comassistant2.simulation.chart;
 import android.graphics.Color;
 import android.util.Log;
 
+import com.example.administrator.comassistant2.ApplicationController;
+import com.example.administrator.comassistant2.R;
 import com.example.administrator.comassistant2.simulation.Config;
 import com.example.administrator.comassistant2.simulation.bean.LimitLineBean;
 import com.example.administrator.comassistant2.simulation.bean.XLimitLineBean;
 import com.example.administrator.comassistant2.simulation.bean.XLimitLineListBean;
 import com.example.administrator.comassistant2.simulation.filesave.LocalSeter;
+import com.example.administrator.comassistant2.simulation.tool.DataSwitcher;
 import com.example.administrator.comassistant2.simulation.tool.LogUtil;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Legend;
@@ -28,6 +31,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static android.content.ContentValues.TAG;
+import static com.example.administrator.comassistant2.simulation.tool.DataSwitcher.getDimenPxFloat;
 
 /**
  * Created by dongdaxing on 2018/7/29.
@@ -102,13 +106,13 @@ public class DynamicLineChartManager {
         //折线图例 标签 设置
         Legend legend = lineChart.getLegend();
         legend.setForm(Legend.LegendForm.LINE);
-        legend.setTextSize(9f);
+        legend.setTextSize(getDimenPxFloat(R.dimen.legend_textsize));
         //显示位置
         legend.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
         legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.LEFT);
         legend.setOrientation(Legend.LegendOrientation.HORIZONTAL);
         legend.setDrawInside(false);
-        legend.setTextSize(10);
+        legend.setTextSize(getDimenPxFloat(R.dimen.legend2_textsize));
         legend.setTextColor(Color.WHITE);
 
         //X轴设置显示位置在底部
@@ -119,7 +123,7 @@ public class DynamicLineChartManager {
         xAxis.setEnabled(true);
         xAxis.setDrawGridLines(true);
         xAxis.setGridLineWidth(2f);
-        xAxis.setTextSize(5f);
+        xAxis.setTextSize(getDimenPxFloat(R.dimen.xAxis_textsize));
         xAxis.setDrawLabels(true);
         xAxis.enableGridDashedLine(2f, (float) (357.5 / 50.3), 0f);
 
@@ -128,7 +132,7 @@ public class DynamicLineChartManager {
         leftAxis.setGridLineWidth(0f);
         leftAxis.enableGridDashedLine(3f, (float) (500 / 51.4), -1f);
         leftAxis.setAxisMinimum(0f);
-        leftAxis.setTextSize(10f);
+        leftAxis.setTextSize(getDimenPxFloat(R.dimen.leftAxis_textsize));
         rightAxis.setAxisMinimum(0f);
         rightAxis.setTextColor(Color.WHITE);
         rightAxis.setDrawGridLines(false);
@@ -611,7 +615,7 @@ public class DynamicLineChartManager {
                 baseLine = new LimitLine(item.getHighValue(), "H-"+item.getHighValue());
                 baseLine.setTextColor(Color.WHITE);
                 baseLine.setLineColor(Color.YELLOW);
-                baseLine.setTextSize(10f);
+                baseLine.setTextSize(getDimenPxFloat(R.dimen.baseLine_textsize));
                 leftAxis.addLimitLine(baseLine);
             }
 
@@ -620,7 +624,7 @@ public class DynamicLineChartManager {
                 baseLowLine = new LimitLine(item.getLowValue(), "L-"+item.getLowValue());
                 baseLowLine.setTextColor(Color.WHITE);
                 baseLowLine.setLineColor(Color.YELLOW);
-                baseLowLine.setTextSize(10f);
+                baseLowLine.setTextSize(getDimenPxFloat(R.dimen.baseLine_textsize));
                 leftAxis.addLimitLine(baseLowLine);
             }
 

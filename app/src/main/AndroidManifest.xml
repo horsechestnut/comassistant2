@@ -11,7 +11,7 @@
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         <activity
             android:name="com.example.administrator.comassistant2.simulation.ComAssistantActivity"
-            android:configChanges="orientation|keyboard"
+            android:configChanges="screenSize|keyboardHidden|orientation"
             android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,7 +23,13 @@
             android:name="com.example.administrator.comassistant2.simulation.activity.setactivity.SetActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"></activity>
+        <activity
+            android:name="com.example.administrator.comassistant2.simulation.activity.setactivity.DevicePhoneActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait"></activity>
     </application>
+
+    <!--<uses-permission android:name="android.permission.CHANGE_CONFIGURATION" />-->
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />

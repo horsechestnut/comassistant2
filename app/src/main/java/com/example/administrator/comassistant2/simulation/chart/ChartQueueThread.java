@@ -170,6 +170,9 @@ public class ChartQueueThread extends Thread {
                     jjActivity.wcof = true;
                 }
 
+                if (list.get(0) > 7 || list.get(1) > 7) {
+                    LogUtil.ii(" 超出 " + list.get(0) + " " + list.get(1));
+                }
                 jjActivity.dynamicLineChartManager2.addEntry(list, 100);
                 list.clear();
             }

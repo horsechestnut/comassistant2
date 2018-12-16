@@ -9,6 +9,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -29,6 +30,7 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.example.administrator.comassistant2.R;
+import com.example.administrator.comassistant2.simulation.activity.setactivity.DevicePhoneActivity;
 import com.example.administrator.comassistant2.simulation.bean.LimitLineBean;
 import com.example.administrator.comassistant2.simulation.bean.PageChartDataBean;
 import com.example.administrator.comassistant2.simulation.bean.PageFileQueueBean;
@@ -38,6 +40,7 @@ import com.example.administrator.comassistant2.simulation.chart.PageLineChartMan
 import com.example.administrator.comassistant2.simulation.collector.Collector;
 import com.example.administrator.comassistant2.simulation.filesave.FileOpster;
 import com.example.administrator.comassistant2.simulation.filesave.LocalSeter;
+import com.example.administrator.comassistant2.simulation.filesave.TempFileQueueThread;
 import com.example.administrator.comassistant2.simulation.tool.IConstant;
 import com.example.administrator.comassistant2.simulation.tool.LogUtil;
 import com.example.administrator.comassistant2.simulation.tool.MyFunc;
@@ -55,6 +58,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static android.content.ContentValues.TAG;
+import static com.example.administrator.comassistant2.simulation.tool.DataSwitcher.getDimenPxFloat;
 import static com.example.administrator.comassistant2.simulation.tool.MyFunc.byteToInt;
 
 /**
@@ -150,8 +154,13 @@ public class ComAssistantActivity extends Activity implements View.OnClickListen
         requestWindowFeature(Window.FEATURE_NO_TITLE);//隐藏标题栏
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);//隐藏状态栏
         setContentView(R.layout.main_activity);
-        //		hideBottomUIMenu();
+        hideBottomUIMenu();
 
+        dynamicLineChartManager2.index = 0;
+        jjPageChartManager.index = 0;
+        TempFileQueueThread.PauseResumePageId = -10;
+
+        LogUtil.ii("ORIENTATION_LANDSCAPE oncreate");
         initViews();
         RunStopToggle(); //RunStop
 
@@ -160,6 +169,20 @@ public class ComAssistantActivity extends Activity implements View.OnClickListen
         avgHandler.sendEmptyMessageDelayed(Event_TimingStatisLog, jjConfig.getTimer_Statis()); //定时打印日志
     }
 
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            // 当前为横屏
+            Log.d("GXT", "ORIENTATION_LANDSCAPE=" + Configuration.ORIENTATION_LANDSCAPE);// 2
+        } else if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            // 当前为竖屏
+            Log.d("GXT", "ORIENTATION_PORTRAIT=" + Configuration.ORIENTATION_PORTRAIT);// 1
+        }
+
+
+        super.onConfigurationChanged(newConfig);
+    }
 
     //总控制器
     public class AveHandler extends Handler {
@@ -296,13 +319,17 @@ public class ComAssistantActivity extends Activity implements View.OnClickListen
                 dynamicLineChartManager2.index = 0;
                 dynamicLineChartManager2.rstCurve(); //更新Chart 表
 
-                jjPageChartManager.index = -10;
+                jjPageChartManager.index = 0;
                 jjPageChartManager.rstCurve(); //更新PageChart
-                jjBufferManager.initPageIndex();
+                jjBufferManager.initPageIndex(-1); //这里-1没有用到，因为 dynamicLineChartManager2.index =0
+
+                TempFileQueueThread.PauseResumePageId = -10; //恢复它
 
                 addStart();
                 initPageStart();
                 handler2.sendEmptyMessage(0);//关闭对话框
+
+
             }
         }
         timeDiv = -1;
@@ -587,8 +614,8 @@ public class ComAssistantActivity extends Activity implements View.OnClickListen
         switch (id) {
             // Time scale+ button
             case R.id.btn_gxtset:
-                setMsg("暂不开放");
-//                SetActivity.switchToThis(ComAssistantActivity.this);
+//                setMsg("暂不开放");
+                DevicePhoneActivity.switchToThis(ComAssistantActivity.this);
                 break;
             case R.id.btn_mooni:
                 do4BtnMoni();
@@ -692,7 +719,7 @@ public class ComAssistantActivity extends Activity implements View.OnClickListen
             dynamicLineChartManager2.upGrid(startX);
 
             //分页表移动到相关位置
-            jjPageChartManager.upGrid(jjBufferManager.getPageId());
+            jjPageChartManager.upGrid(jjBufferManager.getPageId() + 10);
 
         } catch (Exception e) {
             LogUtil.ee(e);
@@ -734,7 +761,7 @@ public class ComAssistantActivity extends Activity implements View.OnClickListen
             dynamicLineChartManager2.upGrid(startX);
 
             //分页表移动到相关位置
-            jjPageChartManager.upGrid(jjBufferManager.getPageId());
+            jjPageChartManager.upGrid(jjBufferManager.getPageId() + 10);
 
 
         } catch (Exception e) {
@@ -825,8 +852,11 @@ public class ComAssistantActivity extends Activity implements View.OnClickListen
             dynamicLineChartManager2.restoreData();
             avgHandler.sendEmptyMessage(7);
         }
+
+
         isScopeRunning = !isScopeRunning;
         if (isScopeRunning) {
+            //==================开始运行，此时需要校验下当前的分页数=======================
             try {
                 Hispageid = -1;
                 dynamicLineChartManager2.clearBd();
@@ -842,7 +872,13 @@ public class ComAssistantActivity extends Activity implements View.OnClickListen
             }
 
             //分页索引初始化
-            jjBufferManager.initPageIndex();
+            int pagenum = 0;
+            if (jjPageChartManager != null) {
+                pagenum = jjPageChartManager.getEntryCounts();
+            }
+
+            jjBufferManager.initPageIndex(pagenum);
+
             //横线限制线配置,是否之前绘制过，如果是则恢复
             boolean isContainDraw = dynamicLineChartManager2.drawLimitLine();
             if (isContainDraw) {
@@ -880,26 +916,21 @@ public class ComAssistantActivity extends Activity implements View.OnClickListen
     public void onDestroy() {
         CloseComPort(ComA);
         super.onDestroy();
+        Log.d("GXT", "ORIENTATION_PORTRAIT= onDestroy ");
         if (D) Log.i(TAG, "- ON onDestroy -");
         LocalBroadcastManager.getInstance(this).unregisterReceiver(jjReceiver);
     }
-
-//    @Override
-//    public void onConfigurationChanged(Configuration newConfig) {
-//        super.onConfigurationChanged(newConfig);
-//        CloseComPort(ComA);
-//        setContentView(R.layout.main_activity);
-//        setControls();
-//    }
 
 
     @Override
     protected void onPause() {
         super.onPause();
+        Log.d("GXT", "ORIENTATION_PORTRAIT= onpause ");
         //暂停采集
         CloseComPort(ComA);
         //初始化展示，正在运行就停止
         if (isScopeRunning) {
+            TempFileQueueThread.PauseResumePageId = jjBufferManager.getPageId();
             RunStopToggle();
         }
     }
@@ -1040,7 +1071,7 @@ public class ComAssistantActivity extends Activity implements View.OnClickListen
 
 
     private void addStart() {
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < jjConfig.getChart_InitAdd_Num(); i++) {
             list.add((float) 0);
             list.add((float) 0);
             dynamicLineChartManager2.addEntry(list, 100);
@@ -1053,7 +1084,7 @@ public class ComAssistantActivity extends Activity implements View.OnClickListen
     private void doDrawPageChartDataBean(PageChartDataBean pageChartDataBean) {
         int line_index = pageChartDataBean.getType() == Type_Temp ? 0 : 1;
 
-        int startX = pageChartDataBean.getPageIndex();
+        int startX = pageChartDataBean.getPageIndex() + 10;
         jjPageChartManager.addLineData(pageChartDataBean.getChartData(), line_index, startX, pageChartDataBean);
         int end_x = jjPageChartManager.getLastXPos();
         jjPageChartManager.upGrid(end_x);
@@ -1090,7 +1121,7 @@ public class ComAssistantActivity extends Activity implements View.OnClickListen
 
     //首次加载时更新信息
     private void initPageStart() {
-        for (int i = 0; i < 11; i++) {
+        for (int i = 0; i < jjConfig.getPage_InitAdd_Num(); i++) {
             pageList.add((float) 0);
             pageList.add((float) -1);
             jjPageChartManager.addEntry(pageList, 100);
@@ -1195,14 +1226,21 @@ public class ComAssistantActivity extends Activity implements View.OnClickListen
         jjBarChart = findViewById(R.id.barChart);
         dynamicLineChartManager2 = new DynamicLineChartManager(mChart2);
         jjPageChartManager = new PageLineChartManager(jjPageChart);
-//        jjBarChart = new PageBarChartManager(jjPageChart);
 
         btn_gxtset.setOnClickListener(this);
         btn_mooni.setOnClickListener(this);
         text_moni.setText("模拟: 1K/s");
 
+        LogUtil.ii("测试尺寸 " + getDimenPxFloat(R.dimen.leftAxis_textsize));
         addStart();//起始页面添加1000个空数据
         initPageStart();
+
+//        if (Config.isIsFirstStart())
+//        {
+//
+//            Config.setIsFirstStart(false);
+//        }
+
 
         handler2 = new Handler() {
             @Override

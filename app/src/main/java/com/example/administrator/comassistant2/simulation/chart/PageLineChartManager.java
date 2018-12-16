@@ -3,6 +3,7 @@ package com.example.administrator.comassistant2.simulation.chart;
 import android.graphics.Color;
 import android.util.Log;
 
+import com.example.administrator.comassistant2.R;
 import com.example.administrator.comassistant2.simulation.Config;
 import com.example.administrator.comassistant2.simulation.bean.LimitLineBean;
 import com.example.administrator.comassistant2.simulation.bean.PageChartDataBean;
@@ -29,6 +30,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static android.content.ContentValues.TAG;
+import static com.example.administrator.comassistant2.simulation.tool.DataSwitcher.getDimenPxFloat;
 
 /**
  * Created by dongdaxing on 2018/7/29.
@@ -42,7 +44,7 @@ public class PageLineChartManager {
     public LineData lineData;
     private LineDataSet lineDataSet;
     public List<ILineDataSet> lineDataSets = new ArrayList<>();
-    public static int index = -10;
+    public static int index = 0;
 
 
     private boolean D = false;
@@ -103,13 +105,13 @@ public class PageLineChartManager {
         //折线图例 标签 设置
         Legend legend = lineChart.getLegend();
         legend.setForm(Legend.LegendForm.LINE);
-        legend.setTextSize(9f);
+        legend.setTextSize(getDimenPxFloat(R.dimen.legend_textsize));
         //显示位置
         legend.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
         legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.LEFT);
         legend.setOrientation(Legend.LegendOrientation.HORIZONTAL);
         legend.setDrawInside(false);
-        legend.setTextSize(10);
+        legend.setTextSize(getDimenPxFloat(R.dimen.legend2_textsize));
         legend.setTextColor(Color.WHITE);
 
         //X轴设置显示位置在底部
@@ -120,7 +122,8 @@ public class PageLineChartManager {
         xAxis.setEnabled(true);
         xAxis.setDrawGridLines(true);
         xAxis.setGridLineWidth(2f);
-        xAxis.setTextSize(5f);
+        xAxis.setTextSize(getDimenPxFloat(R.dimen.xAxis_textsize));
+        xAxis.setXOffset(10);
         xAxis.setDrawLabels(true);
         xAxis.enableGridDashedLine(2f, (float) (357.5 / 50.3), 0f);
 
@@ -129,7 +132,7 @@ public class PageLineChartManager {
         leftAxis.setGridLineWidth(0f);
         leftAxis.enableGridDashedLine(3f, (float) (500 / 51.4), -1f);
         leftAxis.setAxisMinimum(0f);
-        leftAxis.setTextSize(10f);
+        leftAxis.setTextSize(getDimenPxFloat(R.dimen.leftAxis_textsize));
         rightAxis.setAxisMinimum(0f);
         rightAxis.setTextColor(Color.WHITE);
         rightAxis.setDrawGridLines(false);
@@ -157,10 +160,10 @@ public class PageLineChartManager {
         colour.clear();
         //折线名字
         names.add("RealPage");
-        names.add("HisPage");
+        names.add("");
         //折线颜色
         colour.add(Color.RED);
-        colour.add(Color.GREEN);
+        colour.add(Color.BLACK);
         lineDataSets.clear();
 
         for (int i = 0; i < names.size(); i++) {
