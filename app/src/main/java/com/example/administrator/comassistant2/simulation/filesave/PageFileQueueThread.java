@@ -73,59 +73,8 @@ public class PageFileQueueThread extends Thread implements IConstant {
 
     private void doIt(PageFileQueueBean in_bean) {
         doIt4TempFile(in_bean);
-//        doIt4HisFile(in_bean);
     }
 
-    private void doIt4HisFile(PageFileQueueBean in_bean) {
-        if (jjHisFileId != in_bean.fileNum) {
-            genHisFileList(in_bean.fileNum);
-        }
-
-        int start_pos = (in_bean.pageIndex - 1) * jjConfig.getPage_threshold_num();
-        int end_pos = start_pos + jjConfig.getPage_threshold_num();
-
-        if (hisFlieList.size() <= 0 || start_pos < 0 || hisFlieList.size() < start_pos) {
-            return;
-        }
-
-
-        LimitLineBean item = LocalSeter.getLimitLine();
-        float value = 0.0f;
-        if (item == null || (item.getLowValue() == null && item.getHighValue() == null)) {
-            value = 0.0f;
-        } else {
-            //获取策略值计算
-            float highvalue = (item.getHighValue() != null && item.getHighValue() >= 0) ? item.getHighValue() : 0.0f;
-            float lowvalue = (item.getLowValue() != null && item.getLowValue() >= 0) ? item.getLowValue() : 0.0f;
-
-            int num = 0;
-            for (int i = start_pos; i < end_pos; i++) {
-                if (i < hisFlieList.size()) {
-                    if (hisFlieList.get(i) >= lowvalue && hisFlieList.get(i) <=highvalue ) {
-                        num++;
-                    }
-                }
-            }
-            //离差标准归一化
-            value = get3Float(Float.valueOf(num) / Float.valueOf(jjConfig.getPage_threshold_num()));
-        }
-
-        //离差标准归一化
-        PageChartDataBean pageChartDataBean = new PageChartDataBean();
-        pageChartDataBean.setFileIndex(in_bean.fileNum);
-        pageChartDataBean.setPageIndex(in_bean.pageIndex);
-        pageChartDataBean.getChartData().add(value);
-        pageChartDataBean.setType(Type_His);
-
-        int allNum = jjConfig.getFile_MaxSize() / jjConfig.getPage_threshold_num();
-        int startX = allNum * (pageChartDataBean.getFileIndex() - 1) + pageChartDataBean.getPageIndex();
-
-        LogUtil.ii("Page展示: His startX " + startX + " -> " + in_bean.fileNum + " -> " + in_bean.pageIndex + " -> " + value);
-        Message msg = new Message();
-        msg.what = Event_DrawPageChart;
-        msg.obj = pageChartDataBean;
-        jjHanlder.sendMessage(msg);
-    }
 
     private void genHisFileList(int in_filenum) {
         hisFlieList = new ArrayList<>();
@@ -164,7 +113,7 @@ public class PageFileQueueThread extends Thread implements IConstant {
                 }
             }
             //离差标准归一化
-            value = get3Float(Float.valueOf(num) / Float.valueOf(jjConfig.getPage_threshold_num()));
+            value = get3Float(Float.valueOf(num) / Float.valueOf(jjConfig.getPage_MaxSize()));
         }
 
 

@@ -54,36 +54,6 @@ public class HisFileQueueThread extends Thread implements IConstant {
         return rlt;
     }
 
-    //依据文件数获取历史数据
-    @Deprecated
-    public List<Integer> getPageList(int in_filenum, int pageindex) {
-        if (jjPageIndex == null || jjPageIndex.getFileNum() != in_filenum || jjPageIndex.getDataList() == null || jjPageIndex.getDataList().size() <= 0) {
-            //更新文件数据
-            jjPageIndex.setFileNum(in_filenum);
-            List<Integer> fileData = getFileData(jjPageIndex.getFileNum());
-            jjPageIndex.setDataList(fileData);
-        }
-
-
-        List<Integer> rlt = new ArrayList<>();
-
-        if (jjPageIndex.getDataList() == null || jjPageIndex.getDataList().size() <= 0) {
-            return rlt;
-        }
-
-        if (pageindex >= 0) {
-            jjPageIndex.setPageIndex(pageindex);
-            int start = (jjPageIndex.getPageIndex() - 1) * jjConfig.getPage_threshold_num();
-            int end = start + jjConfig.getPage_threshold_num();
-
-            for (int i = start; i < end; i++) {
-                if (i < jjPageIndex.getDataList().size()) {
-                    rlt.add(jjPageIndex.getDataList().get(i));
-                }
-            }
-        }
-        return rlt;
-    }
 
     private List<Integer> getFileData(int in_filenum) {
         String hisName = "Hdb" + in_filenum + ".bin";

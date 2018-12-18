@@ -315,6 +315,7 @@ public class TempFileQueueThread extends Thread implements IConstant {
             pageList.clear();
         }
 
+        /*
         if (pageList.size() >= jjConfig.getPage_threshold_num()) {
             //每隔1000，边进行计算统计数据，并清零
             int pageindex = tempList.size() / jjConfig.getPage_threshold_num();
@@ -335,7 +336,7 @@ public class TempFileQueueThread extends Thread implements IConstant {
 
 //            LocalBroadcastManager.getInstance(ApplicationController.getInstance().getApplicationContext()).sendBroadcast(intent);
             pageList.clear();
-        }
+        }*/
     }
 
 

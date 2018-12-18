@@ -1276,7 +1276,7 @@ public class ComAssistantActivity extends Activity implements View.OnClickListen
 
         data = (PageChartDataBean) e.getData();
 
-        String info = "当前页信息： 总数[" + jjConfig.getPage_threshold_num() + "], 类型[实时], 文件索引[" + data.getFileIndex() + "], 分页值[" + data.getPageIndex() + "], 数值[" + data.getChartData().get(0) + "].";
+        String info = "当前页信息： 总数[" + jjConfig.getPage_MaxSize() + "], 类型[实时], 文件索引[" + data.getFileIndex() + "], 分页值[" + data.getPageIndex() + "], 数值[" + data.getChartData().get(0) + "].";
         setMsg(info);
         LogUtil.ii("点击事件 " + e.getX() + " " + e.getY() + " filenum " + data.getFileIndex() + " aver " + data.getAverageValue());
 
